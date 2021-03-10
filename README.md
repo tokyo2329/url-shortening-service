@@ -21,4 +21,5 @@ Everything is done in the "urlshortener" django app.
   * sqlparse==0.4.1
 
 ## To run the service use
+In the main folder
 	python manage.py runserver
