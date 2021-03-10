@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if created_links %}
+
+	<h1>Your shortened urls</h1>
+	<p>
+		<a href='../'>
+			<button type="button" class="btn btn-secondary">Go back</button>
+		</a>
+	</p>
+
+	<ul class="list-group">
+			
+		{% for url in created_links %}
+
+		<li class="list-group-item d-flex justify-content-between align-items-center bg-dark">
+			<div>
+				
+				<a href="{{ url.original_url }}">{{ url.original_url }}</a> shortened to <a href="http://{{ request.get_host }}/r/{{ url.new_url }}">{{ request.get_host }}/r/{{ url.new_url }}</a>
+
+			</div>
+
+			<div>
+				
+				<span class="badge badge-primary badge-pill">{{ url.clicks }}</span>
+
+				<a href='{{ url.new_url }}/delete'>
+					<button type="button" class="btn btn-danger">Delete</button>
+				</a>
+
+				<a href='{{ url.new_url }}/edit'>
+					<button type="button" class="btn btn-secondary">Edit</button>
+				</a>
+
+				<a href='{{ url.new_url }}/history'>
+					<button type="button" class="btn btn-secondary">History</button>
+				</a>
+
+			</div>
+
+		</li>
+
+		{% endfor %}
+
+	</ul>
+
+{% else %}
+
+	<h1>You haven't shortened any urls yet!</h1>
+	<p>
+		<a href='../'>
+			<button type="button" class="btn btn-secondary">Go back</button>
+		</a>
+	</p>
+
+{% endif %}
+
+{% endblock %}

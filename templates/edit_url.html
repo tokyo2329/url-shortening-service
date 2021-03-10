@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+	<div class="container">
+			
+		<h1 class="mb-5">Edit url</h1>
+
+		<form method='POST' class="p-1"> {% csrf_token %}
+				
+			{{ form.as_p }}
+
+			<button type="submit" class="btn btn-success">Save</button>
+
+			<a href="../"><button type="button" class="btn btn-secondary">Go back</button></a>
+
+		</form>
+
+	</div>
+
+{% endblock %}

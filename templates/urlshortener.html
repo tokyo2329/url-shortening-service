@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	
+	<div class="container">
+		
+		<h1 class="mb-5">Url shortening service</h1>
+
+		<form method='POST' class="p-1"> {% csrf_token %}
+			
+			{{ form.as_p }}
+
+			<button type="submit" class="btn btn-success">Save</button>
+
+		</form>
+
+
+		{% if short_url %}
+			<p><b>Your new url: </b><a href="{{ short_url }}">{{ short_url }}</a></p>
+		{% endif %}
+
+		<a href='list-urls'>
+			<button type="button" class="btn btn-secondary">Show my links</button>
+		</a>
+
+	</div>
+
+{% endblock %}
