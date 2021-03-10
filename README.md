@@ -12,8 +12,8 @@ If the generated url already exists in the database, it generates it again. (alt
 Everything is done in the "urlshortener" django app.
 
 ## Requirements:
-1. Python 3.9.2 or higher
-2. Python packages listed below:
+* Python 3.9.2 or higher
+* Python packages listed below:
   * asgiref==3.3.1
   * Django==3.1.7
   * django-ipware==3.0.2
