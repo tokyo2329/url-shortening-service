@@ -19,3 +19,6 @@ Everything is done in the "urlshortener" django app.
   * django-ipware==3.0.2
   * pytz==2021.1
   * sqlparse==0.4.1
+
+## How to run the service?
+	python manage.py runserver
