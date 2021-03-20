@@ -7,13 +7,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('urlshortener', '0004_url_creator_ip'),
+        ("urlshortener", "0004_url_creator_ip"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='url',
-            name='expires_after',
-            field=models.DateField(default=datetime.datetime(2021, 3, 16, 20, 5, 0, 61009)),
+            model_name="url",
+            name="expires_after",
+            field=models.DateField(
+                default=datetime.datetime(2021, 3, 16, 20, 5, 0, 61009)
+            ),
         ),
     ]

@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('urlshortener', '0002_auto_20210306_0842'),
+        ("urlshortener", "0002_auto_20210306_0842"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='url',
-            name='clicks',
+            model_name="url",
+            name="clicks",
             field=models.IntegerField(default=0),
         ),
     ]

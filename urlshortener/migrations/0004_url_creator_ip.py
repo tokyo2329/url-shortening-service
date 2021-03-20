@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('urlshortener', '0003_url_clicks'),
+        ("urlshortener", "0003_url_clicks"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='url',
-            name='creator_IP',
-            field=models.CharField(default='none', max_length=15),
+            model_name="url",
+            name="creator_IP",
+            field=models.CharField(default="none", max_length=15),
         ),
     ]
