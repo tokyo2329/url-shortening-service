@@ -17,6 +17,7 @@ Everything is done in the "urlshortener" django app.
   * asgiref==3.3.1
   * Django==3.1.7
   * django-ipware==3.0.2
+  * hashids==1.3.1
   * pytz==2021.1
   * sqlparse==0.4.1
 
