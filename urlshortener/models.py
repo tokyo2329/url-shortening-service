@@ -3,7 +3,7 @@ import datetime
 
 # Create your models here.
 class Url(models.Model):
-    original_url = models.URLField()
+    original_url = models.CharField(max_length=500)
     hashed_url = models.CharField(max_length=50)
     clicks = models.PositiveIntegerField(default=0)
     creator_IP = models.CharField(max_length=15, default="none")

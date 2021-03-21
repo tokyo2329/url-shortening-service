@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.db.models import F
 
 from ipware.ip import get_client_ip
@@ -18,48 +18,46 @@ import datetime
 def create_short_url_view(request):
     form = UrlCreateForm(request.POST or None)
 
-    short_url = None  # Declare short_url variable
-
     current_IP, is_routable = get_client_ip(request)
+
+    created_url = "definetly not an url"
 
     if form.is_valid():
 
         # hashing the long url using hashids
         hashids = Hashids()
-        id_url = hashids.encode(id(form.instance.original_url))
-        print(id_url)
+        hashed_url = hashids.encode(id(form.instance)) # id() is needed because hashids only encodes integers
 
         # Set model variables
-        form.instance.hashed_url = id_url
+        form.instance.hashed_url = hashed_url
         form.instance.creator_IP = current_IP
 
-        short_url = request.build_absolute_uri() + "r/" + id_url
+        created_url = request.build_absolute_uri() + "r/" + hashed_url
 
         form.save()
         form = UrlCreateForm()
 
     context = {
         "form": form,
-        "short_url": short_url,
+        "created_url": created_url,
     }
 
     return render(request, "urlshortener.html", context)
 
 
-def redirect_view(request, url_id):
-    site = Url.objects.get(hashed_url=url_id)
+def redirect_view(request, hashed_url):
+    site = Url.objects.get(hashed_url=hashed_url)
 
     # Increment clicks
     site.clicks = F("clicks") + 1
     site.save()
 
     # Creating another instance because if i used site.clicks again it was read as "CombinedExpression"
-    my_instance = Url.objects.get(hashed_url=url_id)
+    my_instance = Url.objects.get(hashed_url=hashed_url)
 
     # Check if it's outdated
     if my_instance.expires_after < datetime.date.today():
         my_instance.delete()
-        UrlHistory.objects.filter(url_id=url_id).delete()
         return HttpResponse("<h1>Link out of date</h1")
 
     # Check if it has reached the clicks threshold
@@ -68,16 +66,12 @@ def redirect_view(request, url_id):
         and my_instance.clicks > my_instance.expires_after_x_clicks
     ):
         my_instance.delete()
-        UrlHistory.objects.filter(url_id=url_id).delete()
         return HttpResponse("<h1>Reached maximum number of redirects threshold</h1")
 
     # Get IP address
     current_IP, is_routable = get_client_ip(request)
 
-    # Add a "history" entry
-    UrlHistory.objects.create(url_id=url_id, ip_address=current_IP)
-
-    return redirect(site.original_url)
+    return redirect(convert_text_to_url(site.original_url))
 
 
 def list_urls_view(request):
@@ -119,3 +113,13 @@ def history_url_view(request, url_id):
     context = {"current_url_history": current_url_history}
 
     return render(request, "history_url.html", context)
+
+def convert_text_to_url(text):
+
+    if text.find("www.") == -1:
+        text = "www." + text
+
+    if text.find("http://") == -1 and text.find("https://") == -1:
+        text = "http://" + text
+
+    return text

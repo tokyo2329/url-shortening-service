@@ -26,7 +26,7 @@ from urlshortener.views import history_url_view
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", create_short_url_view, name="home"),
-    path("r/<str:url_id>", redirect_view, name="redirect"),
+    path("r/<str:hashed_url>", redirect_view, name="redirect"),
     path("list-urls/", list_urls_view, name="list"),
     path("list-urls/<str:url_id>/delete", delete_url_view, name="delete"),
     path("list-urls/<str:url_id>/edit", edit_url_view, name="edit"),

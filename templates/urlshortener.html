@@ -15,9 +15,9 @@
 		</form>
 
 
-		{% if short_url %}
-			<p><b>Your new url: </b><a href="{{ short_url }}">{{ short_url }}</a></p>
-		{% endif %}
+		{% ifnotequal created_url "definetly not an url" %}
+			<p><b>Your new url: </b><a href="{{ created_url }}">{{ created_url }}</a></p>
+		{% endifnotequal %}
 
 		<a href='list-urls'>
 			<button type="button" class="btn btn-secondary">Show my links</button>
