@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.db.models import F
 
 from ipware.ip import get_client_ip
+from hashids import Hashids
 
 from .forms import UrlCreateForm
 from .forms import UrlEditForm
@@ -23,15 +24,13 @@ def create_short_url_view(request):
 
     if form.is_valid():
 
-        # Create random string of 10 ascii letters
-        id_url = "".join(random.choice(string.ascii_letters) for x in range(10))
-
-        # Check if it already exists
-        while Url.objects.filter(new_url=id_url) == None:
-            id_url = "".join(random.choice(string.ascii_letters) for x in range(10))
+        # hashing the long url using hashids
+        hashids = Hashids()
+        id_url = hashids.encode(id(form.instance.original_url))
+        print(id_url)
 
         # Set model variables
-        form.instance.new_url = id_url
+        form.instance.hashed_url = id_url
         form.instance.creator_IP = current_IP
 
         short_url = request.build_absolute_uri() + "r/" + id_url
@@ -48,14 +47,14 @@ def create_short_url_view(request):
 
 
 def redirect_view(request, url_id):
-    site = Url.objects.get(new_url=url_id)
+    site = Url.objects.get(hashed_url=url_id)
 
     # Increment clicks
     site.clicks = F("clicks") + 1
     site.save()
 
     # Creating another instance because if i used site.clicks again it was read as "CombinedExpression"
-    my_instance = Url.objects.get(new_url=url_id)
+    my_instance = Url.objects.get(hashed_url=url_id)
 
     # Check if it's outdated
     if my_instance.expires_after < datetime.date.today():
@@ -95,14 +94,14 @@ def list_urls_view(request):
 
 
 def delete_url_view(request, url_id):
-    link = Url.objects.get(new_url=url_id)
+    link = Url.objects.get(hashed_url=url_id)
     UrlHistory.objects.filter(url_id=url_id).delete()
     link.delete()
     return redirect("../")
 
 
 def edit_url_view(request, url_id):
-    url_to_edit = Url.objects.get(new_url=url_id)
+    url_to_edit = Url.objects.get(hashed_url=url_id)
     form = UrlEditForm(request.POST or None, instance=url_to_edit)
 
     if form.is_valid():

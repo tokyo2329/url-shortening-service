@@ -18,7 +18,7 @@
 		<li class="list-group-item d-flex justify-content-between align-items-center bg-dark">
 			<div>
 				
-				<a href="{{ url.original_url }}">{{ url.original_url }}</a> shortened to <a href="http://{{ request.get_host }}/r/{{ url.new_url }}">{{ request.get_host }}/r/{{ url.new_url }}</a>
+				<a href="{{ url.original_url }}">{{ url.original_url }}</a> shortened to <a href="http://{{ request.get_host }}/r/{{ url.hashed_url }}">{{ request.get_host }}/r/{{ url.hashed_url }}</a>
 
 			</div>
 
@@ -26,15 +26,15 @@
 				
 				<span class="badge badge-primary badge-pill">{{ url.clicks }}</span>
 
-				<a href='{{ url.new_url }}/delete'>
+				<a href='{{ url.hashed_url }}/delete'>
 					<button type="button" class="btn btn-danger">Delete</button>
 				</a>
 
-				<a href='{{ url.new_url }}/edit'>
+				<a href='{{ url.hashed_url }}/edit'>
 					<button type="button" class="btn btn-secondary">Edit</button>
 				</a>
 
-				<a href='{{ url.new_url }}/history'>
+				<a href='{{ url.hashed_url }}/history'>
 					<button type="button" class="btn btn-secondary">History</button>
 				</a>
 
