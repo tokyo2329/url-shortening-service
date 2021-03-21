@@ -46,7 +46,10 @@ def create_short_url_view(request):
 
 
 def redirect_view(request, hashed_url):
-    site = Url.objects.get(hashed_url=hashed_url)
+    try: 
+        site = Url.objects.get(hashed_url=hashed_url)
+    except:
+        return HttpResponse("<h1>Not a valid url</h1>")
 
     # Increment clicks
     site.clicks = F("clicks") + 1
