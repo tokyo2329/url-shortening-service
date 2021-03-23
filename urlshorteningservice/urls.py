@@ -20,9 +20,9 @@ from urlshortener.views import (
     CreateShortUrl,
     UrlRedirect,
     ListUrls,
-    UrlDelete
+    UrlDelete,
+    UrlEdit
     )
-from urlshortener.views import edit_url_view
 from urlshortener.views import history_url_view
 
 urlpatterns = [
@@ -31,6 +31,6 @@ urlpatterns = [
     path("r/<str:hashed_url>", UrlRedirect.as_view(), name="redirect"),
     path("list-urls/", ListUrls.as_view(), name="list"),
     path("list-urls/<pk>/delete", UrlDelete.as_view(), name="delete"),
-    path("list-urls/<str:url_id>/edit", edit_url_view, name="edit"),
+    path("list-urls/<pk>/edit", UrlEdit.as_view(), name="edit"),
     path("list-urls/<str:url_id>/history", history_url_view, name="history"),
 ]

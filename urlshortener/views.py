@@ -6,7 +6,8 @@ from django.views.generic import (
     CreateView,
     RedirectView,
     ListView,
-    DeleteView
+    DeleteView,
+    UpdateView
     )
 
 from ipware.ip import get_client_ip
@@ -63,20 +64,13 @@ class ListUrls(ListView):
 class UrlDelete(DeleteView):
     model = Url
     success_url = "../"
-    
 
-def edit_url_view(request, url_id):
-    url_to_edit = Url.objects.get(hashed_url=url_id)
-    form = UrlEditForm(request.POST or None, instance=url_to_edit)
 
-    if form.is_valid():
-        form.save()
-        form = UrlEditForm(request.POST or None, instance=url_to_edit)
-
-    context = {"form": form}
-
-    return render(request, "edit_url.html", context)
-
+class UrlEdit(UpdateView):
+    model = Url
+    fields = ["expires_after", "expires_after_x_clicks"]
+    template_name_suffix = '_edit_form'
+    success_url = "../"
 
 def history_url_view(request, url_id):
     current_url_history = UrlHistory.objects.filter(url_id=url_id)
