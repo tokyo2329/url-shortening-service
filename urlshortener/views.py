@@ -53,6 +53,7 @@ class UrlRedirect(RedirectView):
 class ListUrls(ListView):
 
     context_object_name = 'urls'
+    paginate_by = 2
 
     def get_queryset(self):
         current_IP, is_routable = get_client_ip(self.request)
