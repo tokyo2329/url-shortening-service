@@ -23,7 +23,6 @@ from urlshortener.views import (
     UrlDelete,
     UrlEdit
     )
-from urlshortener.views import history_url_view
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -32,5 +31,5 @@ urlpatterns = [
     path("list-urls/", ListUrls.as_view(), name="list"),
     path("list-urls/<pk>/delete", UrlDelete.as_view(), name="delete"),
     path("list-urls/<pk>/edit", UrlEdit.as_view(), name="edit"),
-    path("list-urls/<str:url_id>/history", history_url_view, name="history"),
+    #path("list-urls/<str:url_id>/history", history_url_view, name="history"),
 ]

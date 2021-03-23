@@ -13,8 +13,9 @@ class Url(models.Model):
         default=datetime.datetime.now() + datetime.timedelta(days=7)
     )
     expires_after_x_clicks  = models.PositiveIntegerField(default=0)
-
-class UrlHistory(models.Model):
-    url_id          = models.CharField(max_length=10)
+"""
+class History(models.Model):
+    url             = models.ForeignKey(Url, on_delete=models.CASCADE)
     ip_address      = models.GenericIPAddressField()
     date_time       = models.DateTimeField(auto_now_add=True)
+"""

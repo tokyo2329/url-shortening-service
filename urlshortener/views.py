@@ -13,10 +13,8 @@ from django.views.generic import (
 from ipware.ip import get_client_ip
 from hashids import Hashids
 
-from .forms import UrlCreateForm
-from .forms import UrlEditForm
 from .models import Url
-from .models import UrlHistory
+#from .models import History
 
 import random
 import string
@@ -58,7 +56,6 @@ class ListUrls(ListView):
 
     def get_queryset(self):
         current_IP, is_routable = get_client_ip(self.request)
-        print(Url.objects.filter(creator_IP=current_IP))
         return Url.objects.filter(creator_IP=current_IP)
 
 class UrlDelete(DeleteView):
@@ -72,12 +69,6 @@ class UrlEdit(UpdateView):
     template_name_suffix = '_edit_form'
     success_url = "../"
 
-def history_url_view(request, url_id):
-    current_url_history = UrlHistory.objects.filter(url_id=url_id)
-
-    context = {"current_url_history": current_url_history}
-
-    return render(request, "history_url.html", context)
 
 def convert_text_to_url(text):
 
