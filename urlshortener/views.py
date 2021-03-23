@@ -1,6 +1,13 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse, get_object_or_404
+from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
 from django.db.models import F
+from django.views.generic import (
+    CreateView,
+    RedirectView,
+    ListView,
+    DeleteView
+    )
 
 from ipware.ip import get_client_ip
 from hashids import Hashids
@@ -14,88 +21,49 @@ import random
 import string
 import datetime
 
-# Create your views here.
-def create_short_url_view(request):
-    form = UrlCreateForm(request.POST or None)
 
-    current_IP, is_routable = get_client_ip(request)
+class CreateShortUrl(CreateView):
+    model = Url
+    fields = ['original_url']
 
-    created_url = "definetly not an url"
+    def form_valid(self, form):
 
-    if form.is_valid():
-
-        # hashing the long url using hashids
-        hashids = Hashids()
-        hashed_url = hashids.encode(id(form.instance)) # id() is needed because hashids only encodes integers
-
-        # Set model variables
-        form.instance.hashed_url = hashed_url
+        # Setting the IP
+        current_IP, is_routable = get_client_ip(self.request)
         form.instance.creator_IP = current_IP
 
-        created_url = request.build_absolute_uri() + "r/" + hashed_url
-
+        # Hashing the url
+        hashids = Hashids()
+        form.instance.hashed_url = hashids.encode(id(form.instance))
         form.save()
-        form = UrlCreateForm()
 
-    context = {
-        "form": form,
-        "created_url": created_url,
-    }
+        #created_url = self.request.build_absolute_uri() + "r/" + form.instance.hashed_url
+        return redirect("home")
+    #self.request.build_absolute_uri() + "r/" + form.instance.hashed_url   
 
-    return render(request, "urlshortener.html", context)
+class UrlRedirect(RedirectView):
 
+    permanent = False
+    query_string = True
+    pattern_name = 'redirect'
 
-def redirect_view(request, hashed_url):
-    try: 
-        site = Url.objects.get(hashed_url=hashed_url)
-    except:
-        return HttpResponse("<h1>Not a valid url</h1>")
+    def get_redirect_url(self, *args, **kwargs):
+        url = get_object_or_404(Url, hashed_url=kwargs['hashed_url'])
+        return convert_text_to_url(url.original_url)
 
-    # Increment clicks
-    site.clicks = F("clicks") + 1
-    site.save()
+class ListUrls(ListView):
 
-    # Creating another instance because if i used site.clicks again it was read as "CombinedExpression"
-    my_instance = Url.objects.get(hashed_url=hashed_url)
+    context_object_name = 'urls'
 
-    # Check if it's outdated
-    if my_instance.expires_after < datetime.date.today():
-        my_instance.delete()
-        return HttpResponse("<h1>Link out of date</h1")
+    def get_queryset(self):
+        current_IP, is_routable = get_client_ip(self.request)
+        print(Url.objects.filter(creator_IP=current_IP))
+        return Url.objects.filter(creator_IP=current_IP)
 
-    # Check if it has reached the clicks threshold
-    if (
-        my_instance.expires_after_x_clicks != 0
-        and my_instance.clicks > my_instance.expires_after_x_clicks
-    ):
-        my_instance.delete()
-        return HttpResponse("<h1>Reached maximum number of redirects threshold</h1")
-
-    # Get IP address
-    current_IP, is_routable = get_client_ip(request)
-
-    return redirect(convert_text_to_url(site.original_url))
-
-
-def list_urls_view(request):
-    current_IP, is_routable = get_client_ip(request)
-
-    # List of all links created by a user (IP)
-    created_links = Url.objects.filter(creator_IP=current_IP)
-
-    site_url = request.build_absolute_uri() + "r/"
-
-    context = {"created_links": created_links, "site_url": site_url}
-
-    return render(request, "list_urls.html", context)
-
-
-def delete_url_view(request, url_id):
-    link = Url.objects.get(hashed_url=url_id)
-    UrlHistory.objects.filter(url_id=url_id).delete()
-    link.delete()
-    return redirect("../")
-
+class UrlDelete(DeleteView):
+    model = Url
+    success_url = "../"
+    
 
 def edit_url_view(request, url_id):
     url_to_edit = Url.objects.get(hashed_url=url_id)

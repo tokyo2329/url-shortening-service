@@ -16,19 +16,21 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from urlshortener.views import create_short_url_view
-from urlshortener.views import redirect_view
-from urlshortener.views import list_urls_view
-from urlshortener.views import delete_url_view
+from urlshortener.views import (
+    CreateShortUrl,
+    UrlRedirect,
+    ListUrls,
+    UrlDelete
+    )
 from urlshortener.views import edit_url_view
 from urlshortener.views import history_url_view
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", create_short_url_view, name="home"),
-    path("r/<str:hashed_url>", redirect_view, name="redirect"),
-    path("list-urls/", list_urls_view, name="list"),
-    path("list-urls/<str:url_id>/delete", delete_url_view, name="delete"),
+    path("", CreateShortUrl.as_view(success_url="/"), name="home"),
+    path("r/<str:hashed_url>", UrlRedirect.as_view(), name="redirect"),
+    path("list-urls/", ListUrls.as_view(), name="list"),
+    path("list-urls/<pk>/delete", UrlDelete.as_view(), name="delete"),
     path("list-urls/<str:url_id>/edit", edit_url_view, name="edit"),
     path("list-urls/<str:url_id>/history", history_url_view, name="history"),
 ]
