@@ -53,7 +53,7 @@ class UrlRedirect(RedirectView):
             url.delete()
             return "../"
         # Check if it's reached the max clicks threshold
-        elif url.clicks > url.expires_after_x_clicks and url.expires_after_x_clicks != 0:
+        elif url.clicks >= url.expires_after_x_clicks and url.expires_after_x_clicks != 0:
             url.delete()
             return "../"
         else:
