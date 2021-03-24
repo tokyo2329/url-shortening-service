@@ -21,7 +21,8 @@ from urlshortener.views import (
     UrlRedirect,
     ListUrls,
     UrlDelete,
-    UrlEdit
+    UrlEdit,
+    ListUrlHistory
     )
 
 urlpatterns = [
@@ -31,5 +32,5 @@ urlpatterns = [
     path("list-urls/", ListUrls.as_view(), name="list"),
     path("list-urls/<pk>/delete", UrlDelete.as_view(), name="delete"),
     path("list-urls/<pk>/edit", UrlEdit.as_view(), name="edit"),
-    #path("list-urls/<str:url_id>/history", history_url_view, name="history"),
+    path("list-urls/<pk>/history", ListUrlHistory.as_view(), name="history"),
 ]
