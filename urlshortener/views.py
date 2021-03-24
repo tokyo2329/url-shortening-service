@@ -14,9 +14,8 @@ from ipware.ip import get_client_ip
 from hashids import Hashids
 
 from .models import Url
-#from .models import History
+from .models import History
 
-import random
 import string
 import datetime
 
@@ -48,16 +47,20 @@ class UrlRedirect(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         url = get_object_or_404(Url, hashed_url=kwargs['hashed_url'])
+        current_IP, is_routable = get_client_ip(self.request)
+        History.objects.create(url=url, ip_address=current_IP)
         return convert_text_to_url(url.original_url)
+
 
 class ListUrls(ListView):
 
     context_object_name = 'urls'
-    paginate_by = 2
+    paginate_by = 10
 
     def get_queryset(self):
         current_IP, is_routable = get_client_ip(self.request)
         return Url.objects.filter(creator_IP=current_IP)
+
 
 class UrlDelete(DeleteView):
     model = Url
@@ -69,6 +72,15 @@ class UrlEdit(UpdateView):
     fields = ["expires_after", "expires_after_x_clicks"]
     template_name_suffix = '_edit_form'
     success_url = "../"
+
+
+class ListUrlHistory(ListView):
+
+    context_object_name = 'ips'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return History.objects.filter(url=self.kwargs['pk'])
 
 
 def convert_text_to_url(text):
