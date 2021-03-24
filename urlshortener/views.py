@@ -47,9 +47,25 @@ class UrlRedirect(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         url = get_object_or_404(Url, hashed_url=kwargs['hashed_url'])
-        current_IP, is_routable = get_client_ip(self.request)
-        History.objects.create(url=url, ip_address=current_IP)
-        return convert_text_to_url(url.original_url)
+
+        # Check if it's outdated
+        if datetime.date.today() > url.expires_after:
+            url.delete()
+            return "../"
+        # Check if it's reached the max clicks threshold
+        elif url.clicks > url.expires_after_x_clicks and url.expires_after_x_clicks != 0:
+            url.delete()
+            return "../"
+        else:
+            # Add a history entry
+            current_IP, is_routable = get_client_ip(self.request)
+            History.objects.create(url=url, ip_address=current_IP)
+
+            # Increment clicks
+            url.clicks = History.objects.filter(url=url).count()
+            url.save()
+
+            return convert_text_to_url(url.original_url)
 
 
 class ListUrls(ListView):
